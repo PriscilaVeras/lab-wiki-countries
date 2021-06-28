@@ -25,7 +25,7 @@ class CountriesList extends React.Component {
                     className="list-group-item list-group-item-action "
                     to={`/countries/${country.cca3}`}
                   >
-                    {country.flag} {country.name.common}
+                    {country.flag}&nbsp;&nbsp;&nbsp; {country.name.common}
                   </Link>
                 </div>
               );

@@ -6,16 +6,21 @@ class CountryDetails extends React.Component {
   state = {
     name: '',
     capital: '',
-    area: '',
+    area: 0,
     borders: [],
+    cca3: '',
   };
 
   searchCountry = () => {
-    this.setState(
-      countries.find((country) => {
+    if (!this.state.name) {
+      const countryFind = countries.find((country) => {
         return country.cca3 === this.props.match.params.cca3;
-      })
-    );
+      });
+
+      if (countryFind) {
+        this.setState({ ...countryFind });
+      }
+    }
   };
 
   render() {
@@ -31,8 +36,8 @@ class CountryDetails extends React.Component {
           <thead></thead>
           <tbody>
             <tr>
-              <td>
-                <h1>{this.state.name} </h1>
+              <td key={this.state.country}>
+                <h1>{this.state.name.common} </h1>
               </td>
 
               <td style={{ width: '30%' }}>Capital {this.state.capital} </td>
@@ -50,7 +55,7 @@ class CountryDetails extends React.Component {
                   {this.state.borders.map((border) => {
                     return (
                       <li key={border.cca3}>
-                        <Link to={`/${border}`}>{border} </Link>
+                        <Link to={`/${this.state.cca3}`}>{border} </Link>
                       </li>
                     );
                   })}
