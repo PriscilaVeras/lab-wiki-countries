@@ -1,51 +1,62 @@
-import React from 'react';
+import { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import countries from '../countries.json';
 
-class CountryDetails extends React.Component {
+class CountryDetails extends Component {
   state = {
     name: '',
     capital: '',
     area: 0,
     borders: [],
-    cca3: '',
   };
-
-  searchCountry = () => {
-    if (!this.state.name) {
-      const countryFind = countries.find((country) => {
-        return country.cca3 === this.props.match.params.cca3;
-      });
-
-      if (countryFind) {
-        this.setState({ ...countryFind });
-      }
+  componentDidMount = () => {
+    this.searchCountry();
+  };
+  componentDidUpdate = (prevProps) => {
+    if (this.props.match.params.cca3 !== prevProps.match.params.cca3) {
+      this.searchCountry();
     }
   };
 
-  render() {
-    console.log(this.props.match.params.cca3);
-    this.searchCountry();
+  searchCountry = () => {
+    const foundCountry = countries.find(
+      (country) => country.cca3 === this.props.match.params.cca3
+    );
 
+    if (foundCountry) {
+      this.setState({
+        name: foundCountry.name.common,
+        capital: foundCountry.capital.join(', '),
+        area: foundCountry.area,
+        borders: [...foundCountry.borders],
+      });
+    }
+  };
+
+  getBorderCommonName = (cca3) => {
+    const country = countries.find((country) => country.cca3 === cca3);
+
+    if (country) {
+      return country.name.common;
+    }
+    return '';
+  };
+
+  render() {
     return (
-      <div className="table">
-        <table
-          className="col-5
-         "
-        >
+      <Fragment>
+        <h1>{this.state.name}</h1>
+        <table className="table">
           <thead></thead>
           <tbody>
             <tr>
-              <td key={this.state.country}>
-                <h1>{this.state.name.common} </h1>
-              </td>
-
-              <td style={{ width: '30%' }}>Capital {this.state.capital} </td>
+              <td style={{ width: '30%' }}>Capital:</td>
+              <td>{this.state.capital}</td>
             </tr>
             <tr>
-              <td>Area: {this.state.area} </td>
+              <td>Area: </td>
               <td>
-                kms<sup>2</sup>
+                {this.state.area} kms<sup>2</sup>
               </td>
             </tr>
             <tr>
@@ -54,8 +65,10 @@ class CountryDetails extends React.Component {
                 <ul>
                   {this.state.borders.map((border) => {
                     return (
-                      <li key={border.cca3}>
-                        <Link to={`/${this.state.cca3}`}>{border} </Link>
+                      <li>
+                        <Link to={`/${border}`}>
+                          {this.getBorderCommonName(border)}
+                        </Link>
                       </li>
                     );
                   })}
@@ -64,7 +77,7 @@ class CountryDetails extends React.Component {
             </tr>
           </tbody>
         </table>
-      </div>
+      </Fragment>
     );
   }
 }
